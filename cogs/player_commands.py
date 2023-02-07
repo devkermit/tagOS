@@ -61,6 +61,34 @@ class PlayerCommands(commands.Cog):
 			await ctx.send('The join command can only be used in ' + join.mention + '.')
 			return
 
+	# Lets players set their role to spectator
+	@commands.command(brief='Allows the user to become a spectator', description='.spectate')
+	async def spectate(self, ctx):
+		# Opens required resources
+		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
+		# Checks if the user is already a Spectator
+		if discord.utils.get(ctx.message.author.roles, name = 'Spectator'):
+			await ctx.send('You are already a Spectator')
+			return
+
+		# Checks if the user has joined the game
+		player_index = self.find(player_database[:,0], str(ctx.message.author.id))
+		if not player_index:
+			join = discord.utils.get(ctx.message.guild.text_channels, name='join')
+			await ctx.send('You need to join the game using .join in ' + join.mention + ' before you can become a spectator.')
+			return
+
+		# Sets the user's role to Spectator and removes any Human or Zombie roles
+		await ctx.message.author.add_roles(discord.utils.get(ctx.message.guild.roles, name='Spectator'))
+		await ctx.message.author.remove_roles(discord.utils.get(ctx.message.guild.roles, name='Human'), discord.utils.get(ctx.message.guild.roles, name='Zombie'))
+
+		# Sets the user's role to Spectator in the player database
+		player_database[int(player_index)][5] = 'Spectator'
+		pd.DataFrame(player_database).to_csv(self.databasepath, header=None, index=None)
+
+		await ctx.send(player_database[-1][1] + ' ' + player_database[-1][2] + ' is now a Spectator.')
+		return
+
 	# Check your braincode
 	@commands.command(brief='PMs you your braincode.', description='.check_braincode: PMs you your braincode.')
 	@commands.has_role('Human')
