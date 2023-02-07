@@ -126,6 +126,22 @@ class PlayerCommands(commands.Cog):
 				val+=1
 		await ctx.send('There are ' + str(val) + ' players.')
 
+	# Check the ratio of Humans to Zombies currently in the game
+	@commands.command(brief='Check the ratio of humans to zombies.')
+	async def ratio(self, ctx):
+		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
+		humans = 0
+		zombies = 0
+		for i in player_database:
+			if i[5] == 'Human':
+				humans+=1
+			elif i[5] == 'Zombie':
+				zombies+=1
+		gcd = np.gcd(humans, zombies)
+		humans = int(humans / gcd)
+		zombies = int(zombies / gcd)
+		await ctx.send('There are ' + str(humans) + ' humans for every ' + str(zombies) + ' zombies.')
+
 	# Used by Zombies to tag Humans
 	@commands.command(brief='Tag a Human with their braincode in #zombie-chat.', description='.tag [braincode]: Tag a Human user. i.e. .tag firstsecondthird')
 	async def tag(self, ctx, braincode):
