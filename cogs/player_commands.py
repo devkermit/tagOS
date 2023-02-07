@@ -52,6 +52,7 @@ class PlayerCommands(commands.Cog):
 			player_database = np.append(player_database, [newplayer], axis=0)
 			pd.DataFrame(player_database).to_csv(self.databasepath, header=None, index=None)
 			await ctx.message.author.add_roles(discord.utils.get(ctx.message.guild.roles, name='Human'))
+			await ctx.message.author.remove_roles(discord.utils.get(ctx.message.guild.roles, name='Zombie'), discord.utils.get(ctx.message.guild.roles, name='Spectator'))
 			if ctx.message.author != ctx.message.guild.owner:
 				await ctx.message.author.edit(nick=str(player_database[-1][1] + ' ' + player_database[-1][2]))
 			await ctx.send('Hi there ' + player_database[-1][1] + ' ' + player_database[-1][2] + '.')
