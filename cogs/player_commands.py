@@ -94,6 +94,7 @@ class PlayerCommands(commands.Cog):
 		else:
 			await ctx.send('The bounty command can only be used in ' + bountyset.mention + '.')
 
+	# Check how many zombies are currently in the game
 	@commands.command(brief='Check how many Zombies there are.')
 	async def how_many_zombies(self, ctx):
 		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
@@ -103,6 +104,7 @@ class PlayerCommands(commands.Cog):
 				val+=1
 		await ctx.send('There are ' + str(val) + ' Zombies.')
 
+	# Check how many humans are currently in the game
 	@commands.command(brief='Check how many Humans there are.')
 	async def how_many_humans(self, ctx):
 		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
@@ -111,6 +113,18 @@ class PlayerCommands(commands.Cog):
 			if i[5] == 'Human':
 				val+=1
 		await ctx.send('There are ' + str(val) + ' Humans.')
+	
+	# Check how many total players are currently in the game
+	@commands.command(brief='Check how many players there are.')
+	async def how_many_players(self, ctx):
+		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
+		val = 0
+		for i in player_database:
+			if i[5] == 'Human':
+				val+=1
+			elif i[5] == 'Zombie':
+				val+=1
+		await ctx.send('There are ' + str(val) + ' players.')
 
 	# Used by Zombies to tag Humans
 	@commands.command(brief='Tag a Human with their braincode in #zombie-chat.', description='.tag [braincode]: Tag a Human user. i.e. .tag firstsecondthird')

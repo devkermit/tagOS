@@ -1,2 +1,3 @@
 User ID,First Name,Last Name,Student Number,Brain Code,Role,starvetime,health
-test1,test2,test3,test4,test5,test6,test7,test9
+test1,test2,test3,test4,test5,Human,test7,test9
+test1,test2,test3,test4,test5,Zombie,test7,test9
