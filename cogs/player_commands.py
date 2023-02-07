@@ -193,7 +193,7 @@ class PlayerCommands(commands.Cog):
 			death_messages = np.loadtxt(os.path.join(pathlib.Path(__file__).parents[1], 'death_messages.txt'), dtype=str, delimiter=',')
 			humanchat = discord.utils.get(ctx.message.guild.text_channels, name='human-chat')
 			# Checks player_database for tagged player.
-			player_index = self.find(player_database[:,4], braincode)
+			player_index = self.find(player_database[:,4], braincode.lower())
 			if player_index:
 				tagged = ctx.guild.get_member(int(player_database[int(player_index)][0]))
 				# Ends command if player was alredy a Zombie
