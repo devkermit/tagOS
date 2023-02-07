@@ -47,7 +47,7 @@ class PlayerCommands(commands.Cog):
 				return
 			# Creates entry in player_database for the given student number / other, generates 3 word braincode,  sets role to Human
 			braincode = self.make_braincode(words, player_database)
-			newplayer = np.array([ctx.message.author.id, firstname, lastname, student_number, braincode, 'Human', 0, 100])
+			newplayer = np.array([ctx.message.author.id, firstname, lastname, student_number, braincode.lower(), 'Human', 0, 100])
 			
 			player_database = np.append(player_database, [newplayer], axis=0)
 			pd.DataFrame(player_database).to_csv(self.databasepath, header=None, index=None)
