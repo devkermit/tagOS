@@ -56,7 +56,7 @@ class PlayerCommands(commands.Cog):
 			if ctx.message.author != ctx.message.guild.owner:
 				await ctx.message.author.edit(nick=str(player_database[-1][1] + ' ' + player_database[-1][2]))
 			await ctx.send('Hi there ' + player_database[-1][1] + ' ' + player_database[-1][2] + '.')
-			await ctx.message.author.send('Your braincode is: ' + braincode + '. Keep it secret, keep it safe.')
+			await ctx.message.author.send('Your braincode is: **' + braincode + '**.\n*Keep it secret, keep it safe!*')
 			return
 		else:
 			await ctx.send('The join command can only be used in ' + join.mention + '.')
