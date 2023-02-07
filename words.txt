@@ -153,6 +153,7 @@ cushion
 damage
 danger
 dark
+dart
 day
 dead
 dear
@@ -299,6 +300,8 @@ horse
 hour
 house
 how
+huel
+human
 humour
 ice
 idea
@@ -341,6 +344,7 @@ level
 library
 lift
 light
+ligma
 like
 limit
 line
@@ -405,6 +409,7 @@ near
 neck
 need
 needle
+nerf
 nerve
 net
 new
@@ -628,6 +633,7 @@ strange
 street
 stretch
 strong
+stun
 such
 sudden
 sugar
@@ -638,6 +644,7 @@ sweet
 swim
 system
 table
+tag
 tail
 take
 talk
@@ -748,3 +755,4 @@ yellow
 yes
 you
 young
+zombie
