@@ -143,6 +143,16 @@ class PlayerCommands(commands.Cog):
 				val+=1
 		await ctx.send('There are ' + str(val) + ' Humans.')
 	
+	# Check how many spectators are currently in the game
+	@commands.command(brief='Check how many Spectators there are.')
+	async def how_many_spectators(self, ctx):
+		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
+		val = 0
+		for i in player_database:
+			if i[5] == 'Spectator':
+				val+=1
+		await ctx.send('There are ' + str(val) + ' Spectators.')
+
 	# Check how many total players are currently in the game
 	@commands.command(brief='Check how many players there are.')
 	async def how_many_players(self, ctx):
