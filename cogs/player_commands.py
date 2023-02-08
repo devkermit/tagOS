@@ -221,5 +221,34 @@ class PlayerCommands(commands.Cog):
 			await ctx.send('The tag command can only be used in ' + zombiechat.mention + '.')
 			return
 
+	# Lists all possible player commands
+	@commands.command(brief='List all possible player commands')
+	async def commands(self, ctx):
+		bot_channel = discord.utils.get(ctx.message.guild.text_channels, name='bot-channel')
+		if ctx.channel == bot_channel:
+			await ctx.send('''```.join [firstname] [Lastname] [Student number] - Lets you join the current game of HvZ when used in #join
+
+.spectate - Lets you become a spectator once you have joined the game
+
+.check_braincode - Sends you a private message containing your braincode
+
+.bounty [@Player_Name] - Sets a bounty on the specified player when used in #bounty
+
+.reward [Reward Description] - Specifies the reward for a bounty when used in #bounty
+
+.how_many_zombies - Lets you know how many zombies are currently in the game
+
+.how_many_humans - Lets you know how many humans are currently in the game
+
+.how_many_spectators - Lets you know how many spectators are currently in the game
+
+.how_many players - Lets you know how many players are currently in the game (spectators are not counted)
+
+.ratio - Lets you know the ratio of humans to zombies currently in the game
+
+.tag [Braincode] - Lets a zombie tag the human with the corresponding braincode```''')
+		else:
+			await ctx.send('Sorry, the `.commands` command can only be used in the ' + bot_channel.mention + ' channel!')
+
 async def setup(bot):
 	await bot.add_cog(PlayerCommands(bot))
