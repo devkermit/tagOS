@@ -171,8 +171,9 @@ class PlayerCommands(commands.Cog):
 		
 		# Calculate the ratio of Humans to Zombies using their greatest common denominator
 		gcd = np.gcd(humans, zombies)
-		humans = int(humans / gcd)
-		zombies = int(zombies / gcd)
+		if gcd != 0:
+			humans = int(humans / gcd)
+			zombies = int(zombies / gcd)
 		await ctx.send('There are ' + str(humans) + ' humans for every ' + str(zombies) + ' zombies.')
 
 	# Used by Zombies to tag Humans
