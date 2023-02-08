@@ -98,7 +98,7 @@ class PlayerCommands(commands.Cog):
 		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
 		player_index = self.find(player_database[:,0], str(ctx.message.author.id))
 		if player_index:
-			await ctx.message.author.send('Your braincode is: ' + player_database[int(player_index)][4] + '. Keep it secret, keep it safe.')
+			await ctx.message.author.send('Your braincode is: **' + player_database[int(player_index)][4] + '**.\n*Keep it secret, keep it safe!*')
 			return
 		await ctx.message.author.send('I can\'t find your braincode. Please contact your admin.')
 		return
