@@ -103,27 +103,19 @@ class PlayerCommands(commands.Cog):
 		await ctx.message.author.send('I can\'t find your braincode. Please contact your admin.')
 		return
 
-	@commands.command(brief='Set a bounty on a player.', description='.bounty "@some_player"')
-	async def bounty(self, ctx, member: discord.Member):
+	@commands.command(brief='Set a bounty on a player.', description='.bounty "@some_player", "reward"')
+	async def bounty(self, ctx, member: discord.Member, reward = None):
 		bountyset = discord.utils.get(ctx.message.guild.text_channels, name='bounty-set')
 		bountywall = discord.utils.get(ctx.message.guild.text_channels, name='bounty-wall')
 		if ctx.channel == bountyset:
 			await ctx.message.delete()
-			await bountywall.send('A bounty has been set on ' + member.mention + ' by ' + ctx.message.author.mention + '.')
+			if reward == None:
+				await bountywall.send('A bounty has been set on ' + member.mention + ' by ' + ctx.message.author.mention + '!\nThey did not specify a reward')
+			else:
+				await bountywall.send('A bounty has been set on ' + member.mention + ' by ' + ctx.message.author.mention + '!\nThe reward is: ' + reward)
 		else:
 			await ctx.send('Sorry, the `.bounty` command can only be used in ' + bountyset.mention + '.')
         
-	@commands.command(brief='Set a reward for your bounty.', description='.reward "Reward"')
-	async def reward(self, ctx, reward):
-		bountyset = discord.utils.get(ctx.message.guild.text_channels, name='bounty-set')
-		bountywall = discord.utils.get(ctx.message.guild.text_channels, name='bounty-wall')
-		if ctx.channel == bountyset:
-			await ctx.message.delete()
-			await bountywall.send('The reward is: ' + reward + '.')
-		else:
-			await ctx.send('Sorry, the `.reward` command can only be used in ' + bountyset.mention + '.')
-
-	# Check how many zombies are currently in the game
 	@commands.command(brief='Check how many Zombies there are.')
 	async def how_many_zombies(self, ctx):
 		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
@@ -234,9 +226,7 @@ class PlayerCommands(commands.Cog):
 
 .check_braincode - Sends you a private message containing your braincode
 
-.bounty [@Player_Name] - Sets a bounty on the specified player when used in #bounty
-
-.reward [Reward Description] - Specifies the reward for a bounty when used in #bounty
+.bounty [@Player_Name] "[Reward]" - Sets a bounty on the specified player when used in #bounty (Reward can be left blank)
 
 .how_many_zombies - Lets you know how many zombies are currently in the game
 
