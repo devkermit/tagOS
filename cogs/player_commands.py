@@ -213,7 +213,7 @@ class PlayerCommands(commands.Cog):
 					# Selects a death message randomly and sends message to human-chat announcing tag.
 					death_phrase = str(random.choice(death_messages))
 					await humanchat.send(player_database[int(player_index)][1] + ' ' + player_database[int(player_index)][2] + ' has been tagged. ' + death_phrase +
-										 ' Their braincode was: ' + player_database[int(player_index)][4] + '.')
+										 ' Their braincode was: `' + player_database[int(player_index)][4] + '`.')
 					return
 			await ctx.send('Player does not exist.')
 			return
