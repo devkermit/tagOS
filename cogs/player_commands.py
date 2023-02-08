@@ -98,7 +98,7 @@ class PlayerCommands(commands.Cog):
 		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
 		player_index = self.find(player_database[:,0], str(ctx.message.author.id))
 		if player_index:
-			await ctx.message.author.send('Your braincode is: ' + player_database[int(player_index)][4] + '. Keep it secret, keep it safe.')
+			await ctx.message.author.send('Your braincode is: **' + player_database[int(player_index)][4] + '**.\n*Keep it secret, keep it safe!*')
 			return
 		await ctx.message.author.send('I can\'t find your braincode. Please contact your admin.')
 		return
@@ -176,6 +176,8 @@ class PlayerCommands(commands.Cog):
 				humans+=1
 			elif i[5] == 'Zombie':
 				zombies+=1
+		
+		# Calculate the ratio of Humans to Zombies using their greatest common denominator
 		gcd = np.gcd(humans, zombies)
 		humans = int(humans / gcd)
 		zombies = int(zombies / gcd)
@@ -213,7 +215,7 @@ class PlayerCommands(commands.Cog):
 					# Selects a death message randomly and sends message to human-chat announcing tag.
 					death_phrase = str(random.choice(death_messages))
 					await humanchat.send(player_database[int(player_index)][1] + ' ' + player_database[int(player_index)][2] + ' has been tagged. ' + death_phrase +
-										 ' Their braincode was: ' + player_database[int(player_index)][4] + '.')
+										 ' Their braincode was: `' + player_database[int(player_index)][4] + '`.')
 					return
 			await ctx.send('Player does not exist.')
 			return
