@@ -176,6 +176,8 @@ class PlayerCommands(commands.Cog):
 				humans+=1
 			elif i[5] == 'Zombie':
 				zombies+=1
+		
+		# Calculate the ratio of Humans to Zombies using their greatest common denominator
 		gcd = np.gcd(humans, zombies)
 		humans = int(humans / gcd)
 		zombies = int(zombies / gcd)
