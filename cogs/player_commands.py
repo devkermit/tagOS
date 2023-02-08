@@ -244,7 +244,7 @@ class PlayerCommands(commands.Cog):
 
 .how_many_spectators - Lets you know how many spectators are currently in the game
 
-.how_many players - Lets you know how many players are currently in the game (spectators are not counted)
+.how_many_players - Lets you know how many players are currently in the game (spectators are not counted)
 
 .ratio - Lets you know the ratio of humans to zombies currently in the game
 
