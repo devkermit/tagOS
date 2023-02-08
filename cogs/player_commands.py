@@ -59,7 +59,7 @@ class PlayerCommands(commands.Cog):
 			await ctx.message.author.send('Your braincode is: **' + braincode + '**.\n*Keep it secret, keep it safe!*')
 			return
 		else:
-			await ctx.send('The join command can only be used in ' + join.mention + '.')
+			await ctx.send('Sorry, the `.join` command can only be used in ' + join.mention + '.')
 			return
 
 	# Lets players set their role to spectator
@@ -76,7 +76,7 @@ class PlayerCommands(commands.Cog):
 		player_index = self.find(player_database[:,0], str(ctx.message.author.id))
 		if not player_index:
 			join = discord.utils.get(ctx.message.guild.text_channels, name='join')
-			await ctx.send('You need to join the game using .join in ' + join.mention + ' before you can become a spectator.')
+			await ctx.send('Sorry, you need to join the game using `.join` in ' + join.mention + ' before you can become a spectator.')
 			return
 
 		# Sets the user's role to Spectator and removes any Human or Zombie roles
@@ -111,7 +111,7 @@ class PlayerCommands(commands.Cog):
 			await ctx.message.delete()
 			await bountywall.send('A bounty has been set on ' + member.mention + ' by ' + ctx.message.author.mention + '.')
 		else:
-			await ctx.send('The bounty command can only be used in ' + bountyset.mention + '.')
+			await ctx.send('Sorry, the `.bounty` command can only be used in ' + bountyset.mention + '.')
         
 	@commands.command(brief='Set a reward for your bounty.', description='.reward "Reward"')
 	async def reward(self, ctx, reward):
@@ -121,7 +121,7 @@ class PlayerCommands(commands.Cog):
 			await ctx.message.delete()
 			await bountywall.send('The reward is: ' + reward + '.')
 		else:
-			await ctx.send('The bounty command can only be used in ' + bountyset.mention + '.')
+			await ctx.send('Sorry, the `.reward` command can only be used in ' + bountyset.mention + '.')
 
 	# Check how many zombies are currently in the game
 	@commands.command(brief='Check how many Zombies there are.')
@@ -211,7 +211,7 @@ class PlayerCommands(commands.Cog):
 					pd.DataFrame(player_database).to_csv(self.databasepath, header=None, index=None)
 					
 					# Sends message to zombie-chat announcing tag.
-					await ctx.send('Congrats ' + ctx.message.author.mention + '! You have tagged ' + tagged.mention + '. Their braincode was: ' + player_database[int(player_index)][4])
+					await ctx.send('Congrats ' + ctx.message.author.mention + '! You have tagged ' + tagged.mention + '. Their braincode was: `' + player_database[int(player_index)][4] + '`')
 					# Selects a death message randomly and sends message to human-chat announcing tag.
 					death_phrase = str(random.choice(death_messages))
 					await humanchat.send(player_database[int(player_index)][1] + ' ' + player_database[int(player_index)][2] + ' has been tagged. ' + death_phrase +
@@ -220,7 +220,7 @@ class PlayerCommands(commands.Cog):
 			await ctx.send('Player does not exist.')
 			return
 		else:
-			await ctx.send('The tag command can only be used in ' + zombiechat.mention + '.')
+			await ctx.send('Sorry, the `.tag` command can only be used in ' + zombiechat.mention + '.')
 			return
 
 	# Lists all possible player commands
@@ -250,7 +250,7 @@ class PlayerCommands(commands.Cog):
 
 .tag [Braincode] - Lets a zombie tag the human with the corresponding braincode```''')
 		else:
-			await ctx.send('Sorry, the `.commands` command can only be used in the ' + bot_channel.mention + ' channel!')
+			await ctx.send('Sorry, the `.commands` command can only be used in the ' + bot_channel.mention + ' channel.')
 
 async def setup(bot):
 	await bot.add_cog(PlayerCommands(bot))
