@@ -1,17 +1,1 @@
-@commands.command(brief='Add credits to your account.')
-	async def add_balance(self, ctx, code):
-		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
-		codespath = np.loadtxt(self.codespath, dtype=str, delimiter=',')
 
-		print("one")
-		for i in codespath:
-			if i[0] == code:
-				player_index = self.find(player_database[:,0], str(ctx.message.author.id))
-				if player_index:
-					print("two")
-					print(i[1])
-					update = int(player_database[int(player_index)][6])
-					print("output step:" + update)
-					player_database[int(player_index)][6] = int(player_database[int(player_index)][6] + i[1])
-					print("update")
-					#pd.DataFrame(player_database).to_csv(self.databasepath, header=None, index=None)
