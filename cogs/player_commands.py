@@ -47,19 +47,48 @@ class PlayerCommands(commands.Cog):
 				return
 			# Creates entry in player_database for the given student number / other, generates 3 word braincode,  sets role to Human
 			braincode = self.make_braincode(words, player_database)
-			newplayer = np.array([ctx.message.author.id, firstname, lastname, student_number, braincode, 'Human', 0, 100])
+			newplayer = np.array([ctx.message.author.id, firstname, lastname, student_number, braincode.lower(), 'Human', 0, 100])
 			
 			player_database = np.append(player_database, [newplayer], axis=0)
 			pd.DataFrame(player_database).to_csv(self.databasepath, header=None, index=None)
 			await ctx.message.author.add_roles(discord.utils.get(ctx.message.guild.roles, name='Human'))
+			await ctx.message.author.remove_roles(discord.utils.get(ctx.message.guild.roles, name='Zombie'), discord.utils.get(ctx.message.guild.roles, name='Spectator'))
 			if ctx.message.author != ctx.message.guild.owner:
 				await ctx.message.author.edit(nick=str(player_database[-1][1] + ' ' + player_database[-1][2]))
 			await ctx.send('Hi there ' + player_database[-1][1] + ' ' + player_database[-1][2] + '.')
-			await ctx.message.author.send('Your braincode is: ' + braincode + '. Keep it secret, keep it safe.')
+			await ctx.message.author.send('Your braincode is: **' + braincode + '**.\n*Keep it secret, keep it safe!*')
 			return
 		else:
-			await ctx.send('The join command can only be used in ' + join.mention + '.')
+			await ctx.send('Sorry, the `.join` command can only be used in ' + join.mention + '.')
 			return
+
+	# Lets players set their role to spectator
+	@commands.command(brief='Allows the user to become a spectator', description='.spectate')
+	async def spectate(self, ctx):
+		# Opens required resources
+		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
+		# Checks if the user is already a Spectator
+		if discord.utils.get(ctx.message.author.roles, name = 'Spectator'):
+			await ctx.send('You are already a Spectator')
+			return
+
+		# Checks if the user has joined the game
+		player_index = self.find(player_database[:,0], str(ctx.message.author.id))
+		if not player_index:
+			join = discord.utils.get(ctx.message.guild.text_channels, name='join')
+			await ctx.send('Sorry, you need to join the game using `.join` in ' + join.mention + ' before you can become a spectator.')
+			return
+
+		# Sets the user's role to Spectator and removes any Human or Zombie roles
+		await ctx.message.author.add_roles(discord.utils.get(ctx.message.guild.roles, name='Spectator'))
+		await ctx.message.author.remove_roles(discord.utils.get(ctx.message.guild.roles, name='Human'), discord.utils.get(ctx.message.guild.roles, name='Zombie'))
+
+		# Sets the user's role to Spectator in the player database
+		player_database[int(player_index)][5] = 'Spectator'
+		pd.DataFrame(player_database).to_csv(self.databasepath, header=None, index=None)
+
+		await ctx.send(player_database[-1][1] + ' ' + player_database[-1][2] + ' is now a Spectator.')
+		return
 
 	# Check your braincode
 	@commands.command(brief='PMs you your braincode.', description='.check_braincode: PMs you your braincode.')
@@ -69,31 +98,24 @@ class PlayerCommands(commands.Cog):
 		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
 		player_index = self.find(player_database[:,0], str(ctx.message.author.id))
 		if player_index:
-			await ctx.message.author.send('Your braincode is: ' + player_database[int(player_index)][4] + '. Keep it secret, keep it safe.')
+			await ctx.message.author.send('Your braincode is: **' + player_database[int(player_index)][4] + '**.\n*Keep it secret, keep it safe!*')
 			return
 		await ctx.message.author.send('I can\'t find your braincode. Please contact your admin.')
 		return
 
-	@commands.command(brief='Set a bounty on a player.', description='.bounty "@some_player"')
-	async def bounty(self, ctx, member: discord.Member):
+	@commands.command(brief='Set a bounty on a player.', description='.bounty "@some_player", "reward"')
+	async def bounty(self, ctx, member: discord.Member, reward = None):
 		bountyset = discord.utils.get(ctx.message.guild.text_channels, name='bounty-set')
 		bountywall = discord.utils.get(ctx.message.guild.text_channels, name='bounty-wall')
 		if ctx.channel == bountyset:
 			await ctx.message.delete()
-			await bountywall.send('A bounty has been set on ' + member.mention + ' by ' + ctx.message.author.mention + '.')
+			if reward == None:
+				await bountywall.send('A bounty has been set on ' + member.mention + ' by ' + ctx.message.author.mention + '!\nThey did not specify a reward')
+			else:
+				await bountywall.send('A bounty has been set on ' + member.mention + ' by ' + ctx.message.author.mention + '!\nThe reward is: ' + reward)
 		else:
-			await ctx.send('The bounty command can only be used in ' + bountyset.mention + '.')
+			await ctx.send('Sorry, the `.bounty` command can only be used in ' + bountyset.mention + '.')
         
-	@commands.command(brief='Set a reward for your bounty.', description='.reward "Reward"')
-	async def reward(self, ctx, reward):
-		bountyset = discord.utils.get(ctx.message.guild.text_channels, name='bounty-set')
-		bountywall = discord.utils.get(ctx.message.guild.text_channels, name='bounty-wall')
-		if ctx.channel == bountyset:
-			await ctx.message.delete()
-			await bountywall.send('The reward is: ' + reward + '.')
-		else:
-			await ctx.send('The bounty command can only be used in ' + bountyset.mention + '.')
-
 	@commands.command(brief='Check how many Zombies there are.')
 	async def how_many_zombies(self, ctx):
 		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
@@ -103,6 +125,7 @@ class PlayerCommands(commands.Cog):
 				val+=1
 		await ctx.send('There are ' + str(val) + ' Zombies.')
 
+	# Check how many humans are currently in the game
 	@commands.command(brief='Check how many Humans there are.')
 	async def how_many_humans(self, ctx):
 		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
@@ -111,6 +134,47 @@ class PlayerCommands(commands.Cog):
 			if i[5] == 'Human':
 				val+=1
 		await ctx.send('There are ' + str(val) + ' Humans.')
+	
+	# Check how many spectators are currently in the game
+	@commands.command(brief='Check how many Spectators there are.')
+	async def how_many_spectators(self, ctx):
+		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
+		val = 0
+		for i in player_database:
+			if i[5] == 'Spectator':
+				val+=1
+		await ctx.send('There are ' + str(val) + ' Spectators.')
+
+	# Check how many total players are currently in the game
+	@commands.command(brief='Check how many players there are.')
+	async def how_many_players(self, ctx):
+		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
+		val = 0
+		for i in player_database:
+			if i[5] == 'Human':
+				val+=1
+			elif i[5] == 'Zombie':
+				val+=1
+		await ctx.send('There are ' + str(val) + ' players.')
+
+	# Check the ratio of Humans to Zombies currently in the game
+	@commands.command(brief='Check the ratio of humans to zombies.')
+	async def ratio(self, ctx):
+		player_database = np.loadtxt(self.databasepath, dtype=str, delimiter=',')
+		humans = 0
+		zombies = 0
+		for i in player_database:
+			if i[5] == 'Human':
+				humans+=1
+			elif i[5] == 'Zombie':
+				zombies+=1
+		
+		# Calculate the ratio of Humans to Zombies using their greatest common denominator
+		gcd = np.gcd(humans, zombies)
+		if gcd != 0:
+			humans = int(humans / gcd)
+			zombies = int(zombies / gcd)
+		await ctx.send('There are ' + str(humans) + ' humans for every ' + str(zombies) + ' zombies.')
 
 	# Used by Zombies to tag Humans
 	@commands.command(brief='Tag a Human with their braincode in #zombie-chat.', description='.tag [braincode]: Tag a Human user. i.e. .tag firstsecondthird')
@@ -124,7 +188,7 @@ class PlayerCommands(commands.Cog):
 			death_messages = np.loadtxt(os.path.join(pathlib.Path(__file__).parents[1], 'death_messages.txt'), dtype=str, delimiter=',')
 			humanchat = discord.utils.get(ctx.message.guild.text_channels, name='human-chat')
 			# Checks player_database for tagged player.
-			player_index = self.find(player_database[:,4], braincode)
+			player_index = self.find(player_database[:,4], braincode.lower())
 			if player_index:
 				tagged = ctx.guild.get_member(int(player_database[int(player_index)][0]))
 				# Ends command if player was alredy a Zombie
@@ -140,17 +204,44 @@ class PlayerCommands(commands.Cog):
 					pd.DataFrame(player_database).to_csv(self.databasepath, header=None, index=None)
 					
 					# Sends message to zombie-chat announcing tag.
-					await ctx.send('Congrats ' + ctx.message.author.mention + '! You have tagged ' + tagged.mention + '. Their braincode was: ' + player_database[int(player_index)][4])
+					await ctx.send('Congrats ' + ctx.message.author.mention + '! You have tagged ' + tagged.mention + '. Their braincode was: `' + player_database[int(player_index)][4] + '`')
 					# Selects a death message randomly and sends message to human-chat announcing tag.
 					death_phrase = str(random.choice(death_messages))
 					await humanchat.send(player_database[int(player_index)][1] + ' ' + player_database[int(player_index)][2] + ' has been tagged. ' + death_phrase +
-										 ' Their braincode was: ' + player_database[int(player_index)][4] + '.')
+										 ' Their braincode was: `' + player_database[int(player_index)][4] + '`.')
 					return
 			await ctx.send('Player does not exist.')
 			return
 		else:
-			await ctx.send('The tag command can only be used in ' + zombiechat.mention + '.')
+			await ctx.send('Sorry, the `.tag` command can only be used in ' + zombiechat.mention + '.')
 			return
+
+	# Lists all possible player commands
+	@commands.command(brief='List all possible player commands')
+	async def commands(self, ctx):
+		bot_channel = discord.utils.get(ctx.message.guild.text_channels, name='bot-channel')
+		if ctx.channel == bot_channel:
+			await ctx.send('''```.join [firstname] [Lastname] [Student number] - Lets you join the current game of HvZ when used in #join
+
+.spectate - Lets you become a spectator once you have joined the game
+
+.check_braincode - Sends you a private message containing your braincode
+
+.bounty [@Player_Name] "[Reward]" - Sets a bounty on the specified player when used in #bounty (Reward can be left blank)
+
+.how_many_zombies - Lets you know how many zombies are currently in the game
+
+.how_many_humans - Lets you know how many humans are currently in the game
+
+.how_many_spectators - Lets you know how many spectators are currently in the game
+
+.how_many_players - Lets you know how many players are currently in the game (spectators are not counted)
+
+.ratio - Lets you know the ratio of humans to zombies currently in the game
+
+.tag [Braincode] - Lets a zombie tag the human with the corresponding braincode```''')
+		else:
+			await ctx.send('Sorry, the `.commands` command can only be used in the ' + bot_channel.mention + ' channel.')
 
 async def setup(bot):
 	await bot.add_cog(PlayerCommands(bot))
